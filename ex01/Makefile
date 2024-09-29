@@ -6,7 +6,7 @@
 #    By: dbarrene <dbarrene@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/01 18:14:56 by dbarrene          #+#    #+#              #
-#    Updated: 2024/09/26 23:09:59 by dbarrene         ###   ########.fr        #
+#    Updated: 2024/09/27 16:15:30 by dbarrene         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ SRCDIR = srcs
 OBJDIR = obj
 INCDIR = includes
 CC = c++
-CFLAGS = -Wall -Wextra -Werror -pedantic -g
+CFLAGS = -Wall -Wextra -Werror -pedantic -g -Ofast
 SRCS = $(SRCDIR)/main.cpp\
 	   $(SRCDIR)/RPN.cpp\
 

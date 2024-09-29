@@ -6,7 +6,7 @@
 /*   By: dbarrene <dbarrene@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/26 23:10:17 by dbarrene          #+#    #+#             */
-/*   Updated: 2024/09/27 00:16:55 by dbarrene         ###   ########.fr       */
+/*   Updated: 2024/09/27 15:43:21 by dbarrene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef RPN_HPP
@@ -15,6 +15,7 @@
 #include <iostream>
 #include <algorithm>
 #include <sstream>
+#include <chrono>
 enum t_operators
 {
 	PLUS,
@@ -26,7 +27,7 @@ enum t_operators
 class RPN
 {
 	private:
-		std::stack<int32_t>	m_stack;
+		std::stack<int64_t>	m_stack;
 		void parse_expr(std::string expr);
 	public:
 		RPN(std::string expr);

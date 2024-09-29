@@ -6,7 +6,7 @@
 /*   By: dbarrene <dbarrene@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:46:06 by dbarrene          #+#    #+#             */
-/*   Updated: 2024/09/24 15:12:55 by dbarrene         ###   ########.fr       */
+/*   Updated: 2024/09/29 17:32:40 by dbarrene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef BITCOINEXCHANGE_HPP
@@ -18,13 +18,14 @@
 #include <iostream>
 class BitCoinExchange
 {
-	std::map<std::string,std::string> map;
+	std::map<std::string, float> m_rates;
 	public:
 		BitCoinExchange();
 		~BitCoinExchange();
 		BitCoinExchange(const BitCoinExchange& other);
 		BitCoinExchange& operator=(const BitCoinExchange& other);
-		void calculateExchange(std::string arg);
+		void parseExchange();
+		void treatLine();
 };
 
 #endif

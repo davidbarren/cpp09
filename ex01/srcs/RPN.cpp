@@ -6,40 +6,40 @@
 /*   By: dbarrene <dbarrene@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/26 23:16:35 by dbarrene          #+#    #+#             */
-/*   Updated: 2024/09/27 01:04:00 by dbarrene         ###   ########.fr       */
+/*   Updated: 2024/09/27 16:14:51 by dbarrene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "RPN.hpp"
 
-static void calc_expr(std::stack<int32_t> &st, int32_t (*f)(int32_t, int32_t))
+static inline void calc_expr(std::stack<int64_t> &st, int64_t (*f)(int64_t, int64_t))
 {
 	if (st.size() < 2)
 		throw std::runtime_error("invalid expression in RPN");
-	int32_t operand1 = st.top();
+	int64_t operand1 = st.top();
 	st.pop();
-	int32_t operand2 = st.top();
+	int64_t operand2 = st.top();
 	st.pop();
 	st.push(f(operand2, operand1));
 }
 
-static int32_t add(int32_t a, int32_t b)
+static inline int64_t add(int64_t a, int64_t b)
 {
 	return a + b;
 }
 
 
-static int32_t subtract(int32_t a, int32_t b)
+static inline int64_t subtract(int64_t a, int64_t b)
 {
 	return a - b;
 }
 
-static int32_t multiply(int32_t a, int32_t b)
+static inline int64_t multiply(int64_t a, int64_t b)
 {
 	return a * b;
 }
 
-static int32_t divide(int32_t a, int32_t b)
+static inline int64_t divide(int64_t a, int64_t b)
 {
 	if (!b)
 		throw std::runtime_error("Division by zero attempted");
@@ -47,13 +47,14 @@ static int32_t divide(int32_t a, int32_t b)
 }
 RPN::RPN(std::string expr)
 {
+	std::cout << expr << std::endl;
 	parse_expr(expr);
 };
 
 RPN::~RPN(){
 };
 
-static int	is_operator(int c)
+static inline int	is_operator(int c)
 {
 	switch (c)
 	{
@@ -71,7 +72,7 @@ static int	is_operator(int c)
 
 void	RPN::parse_expr(std::string expr)
 {
-	int32_t (*fun_calc[4])(int32_t, int32_t) = {&add, &subtract, &multiply, &divide};
+	int64_t (*fun_calc[4])(int64_t, int64_t) = {&add, &subtract, &multiply, &divide};
 	if (is_operator(expr.back()) == -1)
 		throw std::runtime_error("incorrect use of reverse polish notation");
 	for (std::string::iterator i = expr.begin(); i != expr.end(); i++)
@@ -83,7 +84,5 @@ void	RPN::parse_expr(std::string expr)
 		else if (*i != ' ')
 			throw std::runtime_error("please input only positive integers ranging from 0 - 9");
 	};
-	if (m_stack.size() > 1)
-		throw std::runtime_error("incorrect use of reverse polish notation");
 	std::cout << "result: " << m_stack.top() << std::endl;
 };
