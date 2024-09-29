@@ -6,7 +6,7 @@
 #    By: dbarrene <dbarrene@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/01 18:14:56 by dbarrene          #+#    #+#              #
-#    Updated: 2024/09/24 14:54:24 by dbarrene         ###   ########.fr        #
+#    Updated: 2024/09/30 00:13:41 by dbarrene         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ SRCDIR = srcs
 OBJDIR = obj
 INCDIR = includes
 CC = c++
-CFLAGS = -Wall -Wextra -Werror -pedantic -g
+CFLAGS = -Wall -Wextra #-Werror -pedantic -g
 SRCS = $(SRCDIR)/main.cpp\
 	   $(SRCDIR)/BitCoinExchange.cpp\
 
