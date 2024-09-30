@@ -6,7 +6,7 @@
 /*   By: dbarrene <dbarrene@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:53:32 by dbarrene          #+#    #+#             */
-/*   Updated: 2024/09/30 00:16:56 by dbarrene         ###   ########.fr       */
+/*   Updated: 2024/09/30 04:34:33 by dbarrene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,10 @@ static	bool dateValidity(std::string line)
 				yr = std::stoi(ymd[YEAR]);
 				if (yr < 2009 || ymd[YEAR].length() != 4)
 					return false;
-				std::cout << "year: " << ymd[YEAR] << std::endl;
 				break;
 			case MONTH:
 				ymd[MONTH] = line;
 				ymd[MONTH] = ymd[MONTH].substr(ymd[MONTH].find('-', index) + 1, 2);
-				std::cout << "month: " << ymd[MONTH] << "\n";
 				mo = std::stoi(ymd[MONTH]);
 				if (ymd[MONTH].length() != 2 || mo <= 0 || mo > 12)
 					return false;
@@ -48,7 +46,6 @@ static	bool dateValidity(std::string line)
 			case DAY:
 				ymd[DAY] = line;
 				ymd[DAY] = ymd[DAY].substr(ymd[DAY].find_last_of('-') + 1, ymd[DAY].find(',') - 1);
-				std::cout << "day: " << ymd[DAY] << "\n";
 				day = std::stoi(ymd[DAY]);
 				if (ymd[DAY].length() != 2 || day <= 0 || day > 31)
 					return false;
@@ -69,7 +66,6 @@ static	bool dateValidity(std::string line)
 						return false;
 				break;
 		}
-		std::cout << "date is indeed valid \n";
 		return true;
 	} 
 	//TODO:
@@ -94,6 +90,7 @@ static bool	lineValidity(std::string line)
 BitCoinExchange::BitCoinExchange()
 {
 	parseExchange();
+	printMap();
 };
 BitCoinExchange::~BitCoinExchange()
 {
@@ -101,7 +98,7 @@ BitCoinExchange::~BitCoinExchange()
 
 void BitCoinExchange::parseExchange()
 {
-	std::ifstream input("data.csv");
+	std::ifstream input("mydata.csv");
 	std::string line;
 	std::getline(input, line);
 
@@ -112,7 +109,44 @@ void BitCoinExchange::parseExchange()
 			throw std::runtime_error("bad line");
 		if (!dateValidity(line))
 			throw std::runtime_error("bad line");
+		treatLine(line);
 	}
 
 };
+
+static bool	is_contiguous(std::string val)
+{
+	bool has_decimal = false;
+	for (std::string::iterator iter = val.begin(); iter != val.end(); iter++)
+	{
+		if (!has_decimal && *iter == '.')
+				has_decimal = true;
+		else if (!std::isdigit(*iter))
+			return false;
+	}
+	return true;
+}
+
+void BitCoinExchange::treatLine(std::string &line)
+{
+	std::string value;
+	float rate;
+	value = line.substr(line.find(',') + 1);
+	line = line.substr(0, line.find(','));
+//	std::cout << "line is: " << line << std::endl;
+//	std::cout << "value is: " << value << "\n";
+	if (!is_contiguous(value))
+		throw std::runtime_error("invalid csv file");
+	rate = std::stof(value);
+	m_rates.insert(std::map<std::string, float>::value_type(line,rate));
+};
+
+void	BitCoinExchange::printMap() const
+{
+	for(auto &i : m_rates)
+	{
+		std::cout << "key : " << i.first << "\n";
+		std::cout << "value : " << i.second << "\n";
+	}
+}
 

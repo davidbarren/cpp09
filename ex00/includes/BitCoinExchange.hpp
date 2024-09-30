@@ -6,7 +6,7 @@
 /*   By: dbarrene <dbarrene@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:46:06 by dbarrene          #+#    #+#             */
-/*   Updated: 2024/09/29 17:32:40 by dbarrene         ###   ########.fr       */
+/*   Updated: 2024/09/30 04:30:34 by dbarrene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef BITCOINEXCHANGE_HPP
@@ -25,7 +25,8 @@ class BitCoinExchange
 		BitCoinExchange(const BitCoinExchange& other);
 		BitCoinExchange& operator=(const BitCoinExchange& other);
 		void parseExchange();
-		void treatLine();
+		void treatLine(std::string &line);
+		void printMap() const;
 };
 
 #endif
