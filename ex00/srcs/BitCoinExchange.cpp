@@ -6,13 +6,14 @@
 /*   By: dbarrene <dbarrene@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:53:32 by dbarrene          #+#    #+#             */
-/*   Updated: 2024/09/30 04:34:33 by dbarrene         ###   ########.fr       */
+/*   Updated: 2024/10/02 14:08:03 by dbarrene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "BitCoinExchange.hpp"
-
-static	bool dateValidity(std::string line)
+#include <algorithm>
+#include <string>
+static	bool dateValidity(std::string line, char delim)
 {
 	enum 
 	{
@@ -21,51 +22,64 @@ static	bool dateValidity(std::string line)
 		DAY
 	};
 	std::string ymd[3]; // year, month, day
-	int		yr, mo, day;
+	int		yr = 0, mo = 0, day = 0;
 	int		index = 0;
-	line = line.substr(0, line.find(','));
+	line = line.substr(0, line.find(delim));
 	for (int i = 0; i < 3; i++)
 	{
 		switch(i)
 		{
 			case YEAR:
+//				std::cout << "entered year condition" << std::endl;
 				ymd[YEAR] = line;
 				index = ymd[YEAR].find('-');
 				ymd[YEAR] = ymd[YEAR].substr(0, ymd[YEAR].find('-'));
 				yr = std::stoi(ymd[YEAR]);
 				if (yr < 2009 || ymd[YEAR].length() != 4)
+				{
+					std::cout << "yr length check failed\n";
 					return false;
-				break;
+				}
+				
 			case MONTH:
 				ymd[MONTH] = line;
+//				std::cout << "entered month condition" << std::endl;
 				ymd[MONTH] = ymd[MONTH].substr(ymd[MONTH].find('-', index) + 1, 2);
 				mo = std::stoi(ymd[MONTH]);
 				if (ymd[MONTH].length() != 2 || mo <= 0 || mo > 12)
+				{
+					std::cout << "mo length check failed\n";
 					return false;
-				break;
+				}
 			case DAY:
 				ymd[DAY] = line;
-				ymd[DAY] = ymd[DAY].substr(ymd[DAY].find_last_of('-') + 1, ymd[DAY].find(',') - 1);
+//				std::cout << "entered day condition" << std::endl;
+				ymd[DAY] = ymd[DAY].substr(ymd[DAY].find_last_of('-') + 1, ymd[DAY].find(delim) - 1);
 				day = std::stoi(ymd[DAY]);
 				if (ymd[DAY].length() != 2 || day <= 0 || day > 31)
+				{
+					std::cout << "day length check failed\n";
 					return false;
-				if ((mo < 8 && mo % 2 == 1) || (mo >= 8 && !mo % 2))
+				}
+				if ((mo < 8 && mo % 2 == 1) || (mo >= 8 && mo % 2 == 0))
 				{
 					if (day > 31)
 						return false;
 				}
 				else if (mo == 2)
 				{
-					if (!yr % 4 && day > 29)
-						return false;
+					if (yr % 4 == 0 && day == 29)
+						return true;
 					else if (day > 28)
 						return false;
 				}
 				else
 					if (day > 30)
 						return false;
-				break;
 		}
+//		std::cout << "year : " << yr << std::endl;
+//		std::cout << "month : " << mo << std::endl;
+//		std::cout << "day : " << day << std::endl;
 		return true;
 	} 
 	//TODO:
@@ -78,19 +92,24 @@ static	bool dateValidity(std::string line)
 	return true;
 }
 
-static bool	lineValidity(std::string line)
+static bool	lineValidity(std::string line, char delim)
 {
+	if (std::count(line.begin(), line.end(), delim) != 1)
+		return false;
+	if (std::count(line.begin(), line.end(), '-') != 2)
+		return false;
 	if (line.find('-') != 4 && line.find_last_of('-' != 7))
 			return false;
-	if (line.find(',') == SIZE_MAX)
+	if (line.find(delim) == SIZE_MAX)
 			return false;
 	return true;
 
 }
-BitCoinExchange::BitCoinExchange()
+BitCoinExchange::BitCoinExchange(std::string wallet)
 {
 	parseExchange();
-	printMap();
+//	printMap();
+	parseWallet(wallet);
 };
 BitCoinExchange::~BitCoinExchange()
 {
@@ -98,17 +117,21 @@ BitCoinExchange::~BitCoinExchange()
 
 void BitCoinExchange::parseExchange()
 {
-	std::ifstream input("mydata.csv");
+	std::ifstream input("testdata.csv");
+	if (!input.is_open())
+		throw ::std::runtime_error("failed to open data file");
 	std::string line;
 	std::getline(input, line);
 
 	while (std::getline(input, line))
 	{
-		std::cout << line << std::endl;
-		if (!lineValidity(line))
+		if (!lineValidity(line, ','))
 			throw std::runtime_error("bad line");
-		if (!dateValidity(line))
-			throw std::runtime_error("bad line");
+		if (!dateValidity(line, ','))
+		{
+			std::cout << "caught bad date" << line << std::endl;
+			throw std::runtime_error("bad date");
+		}
 		treatLine(line);
 	}
 
@@ -117,6 +140,8 @@ void BitCoinExchange::parseExchange()
 static bool	is_contiguous(std::string val)
 {
 	bool has_decimal = false;
+	if (val.back() == '.')
+		return false;
 	for (std::string::iterator iter = val.begin(); iter != val.end(); iter++)
 	{
 		if (!has_decimal && *iter == '.')
@@ -150,3 +175,69 @@ void	BitCoinExchange::printMap() const
 	}
 }
 
+void	BitCoinExchange::parseWallet(std::string wallet)
+{
+	std::ifstream infile(wallet);
+	std::string line;
+	std::string date;
+	std::string value;
+	float valnum = 0;
+	if (!infile.is_open())
+		throw std::runtime_error("failed to open wallet");
+	std::getline(infile,line);
+	while (std::getline(infile, line))
+	{
+//		line.replace(line.find(" | "), 3, "|");
+//		std::cout << "linestatus: " << line << std::endl;
+		date = line.substr(0, line.find(' '));
+		value = line.substr(line.find_last_of(' ') + 1);
+		if (!is_contiguous(value))
+		{
+			std::cerr << "Error: not a valid number.\n";
+			continue ;
+		}
+		valnum = std::stof(value);
+		if (valnum < 0)
+		{
+			std::cerr << "Error: not a positive number.\n";
+			continue ;
+		}
+		if (valnum > 1000)
+		{
+			std::cerr << "Error: too large a number.\n";
+			continue ;
+		}
+		if (!lineValidity(line, '|'))
+		{
+			std::cerr << "Error: incorrect format => " << line << "\n";
+			continue ;
+		}
+		if (!dateValidity(line.substr(0, 10), '|'))
+		{
+			std::cerr << "value of line: " << line << std::endl;
+			std::cerr << "Error: incorrect date input => " << date << "\n";
+			continue ;
+		}
+		printValue(date, valnum);
+	}
+}
+
+void	BitCoinExchange::printValue(std::string key, float num) const
+{
+	float result;
+	try
+	{
+		for (auto &iter : m_rates)
+		{
+			if (key >= iter.first)
+			{
+				result = iter.second * num;
+			}
+		}
+	}
+	catch(std::exception &e)
+	{
+		std::cout << "HUH?" << std::endl;
+	}
+	std::cout << key << " => " << num << " = " << result << std::endl;
+}

@@ -1,34 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   PmergeMe.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dbarrene <dbarrene@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/24 14:44:13 by dbarrene          #+#    #+#             */
-/*   Updated: 2024/09/30 14:55:11 by dbarrene         ###   ########.fr       */
+/*   Created: 2024/10/02 14:25:00 by dbarrene          #+#    #+#             */
+/*   Updated: 2024/10/02 15:01:26 by dbarrene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifndef PMERGEME_HPP
+#define PMERGEME_HPP
+#include <vector>
+#include <list>
 #include <iostream>
-#include "BitCoinExchange.hpp"
+#include <algorithm>
 
-int	main(int argc, char **argv)
+class PmergeMe
 {
-	if (argc != 2)
-	{
-		std::cout << "Please provide an input file" << std::endl;
-		return 1;
-	}
-	try {
-		std::cout << argv[1] << std::endl;
-		BitCoinExchange mybtc(argv[1]);
-	}
-	catch(std::exception &e)
-	{
-		std::cout << "caught exception: " << e.what() << "\n";
-		return 69;
-	}
+	std::vector<int> m_vec;
+	std::list<int> m_list;
+	int				m_size;
+	public:
+		PmergeMe(int argc, char **argv);
+		~PmergeMe();
+		PmergeMe(const PmergeMe& other) = delete;
+		PmergeMe& operator=(const PmergeMe& other) = delete;
+		void	print_data() const;
+};
 
 
-}
+#endif

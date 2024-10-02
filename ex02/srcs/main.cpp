@@ -5,30 +5,26 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dbarrene <dbarrene@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/24 14:44:13 by dbarrene          #+#    #+#             */
-/*   Updated: 2024/09/30 14:55:11 by dbarrene         ###   ########.fr       */
+/*   Created: 2024/10/02 14:23:39 by dbarrene          #+#    #+#             */
+/*   Updated: 2024/10/02 14:38:29 by dbarrene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include "BitCoinExchange.hpp"
+#include "PmergeMe.hpp"
 
 int	main(int argc, char **argv)
 {
-	if (argc != 2)
+	if (argc <= 2)
 	{
-		std::cout << "Please provide an input file" << std::endl;
+		std::cerr << "Please input a valid sequence of integers to be sorted\n";
 		return 1;
 	}
-	try {
-		std::cout << argv[1] << std::endl;
-		BitCoinExchange mybtc(argv[1]);
-	}
-	catch(std::exception &e)
+	try
 	{
-		std::cout << "caught exception: " << e.what() << "\n";
-		return 69;
+		PmergeMe merger(argc, argv);
 	}
-
-
+	catch (std::exception &e)
+	{
+		std::cerr << "Caught exception: " << e.what() << std::endl;
+	}
 }
